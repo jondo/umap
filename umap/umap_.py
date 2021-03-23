@@ -941,6 +941,7 @@ def simplicial_set_embedding(
     euclidean_output=True,
     parallel=False,
     verbose=False,
+    pinned_data=None,
 ):
     """Perform a fuzzy simplicial set embedding, using a specified
     initialisation method and then minimizing the fuzzy set cross entropy
@@ -1160,6 +1161,7 @@ def simplicial_set_embedding(
             verbose=verbose,
             densmap=densmap,
             densmap_kwds=densmap_kwds,
+            pinned_data=pinned_data,
         )
     else:
         embedding = optimize_layout_generic(
@@ -2151,7 +2153,7 @@ class UMAP(BaseEstimator):
 
         return result
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None, pinned_data=None):
         """Fit X into an embedded space.
 
         Optionally use y for supervised dimension reduction.
@@ -2584,6 +2586,7 @@ class UMAP(BaseEstimator):
                 n_epochs,
                 init,
                 random_state,  # JH why raw data?
+                pinned_data=pinned_data,
             )
             # Assign any points that are fully disconnected from our manifold(s) to have embedding
             # coordinates of np.nan.  These will be filtered by our plotting functions automatically.
@@ -2608,7 +2611,7 @@ class UMAP(BaseEstimator):
 
         return self
 
-    def _fit_embed_data(self, X, n_epochs, init, random_state):
+    def _fit_embed_data(self, X, n_epochs, init, random_state, pinned_data=None):
         """A method wrapper for simplicial_set_embedding that can be
         replaced by subclasses.
         """
@@ -2634,9 +2637,10 @@ class UMAP(BaseEstimator):
             self.output_metric in ("euclidean", "l2"),
             self.random_state is None,
             self.verbose,
+            pinned_data=pinned_data,
         )
 
-    def fit_transform(self, X, y=None):
+    def fit_transform(self, X, y=None, pinned_data=None):
         """Fit X into an embedded space and return that transformed
         output.
 
@@ -2666,7 +2670,7 @@ class UMAP(BaseEstimator):
         r_emb: array, shape (n_samples)
             Local radii of data points in the embedding (log-transformed).
         """
-        self.fit(X, y)
+        self.fit(X, y, pinned_data=pinned_data)
         if self.transform_mode == "embedding":
             if self.output_dens:
                 return self.embedding_, self.rad_orig_, self.rad_emb_

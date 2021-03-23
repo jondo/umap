@@ -225,6 +225,7 @@ def optimize_layout_euclidean(
     verbose=False,
     densmap=False,
     densmap_kwds={},
+    pinned_data=None,
 ):
     """Improve an embedding using stochastic gradient descent to minimize the
     fuzzy set cross entropy between the 1-skeletons of the high dimensional
@@ -340,6 +341,14 @@ def optimize_layout_euclidean(
             dens_re_std = 0
             dens_re_mean = 0
             dens_re_cov = 0
+
+        # Brute-force pinning as in
+        # "embedding constraints" (https://github.com/lmcinnes/umap/issues/432#issuecomment-633145366 ),
+        # while "Possibility to fix points in the low embedding" (https://github.com/lmcinnes/umap/issues/606 )
+        # is not done.
+        if pinned_data is not None:
+            for p in pinned_data:
+                head_embedding[p[0]] = p[1]
 
         optimize_fn(
             head_embedding,
