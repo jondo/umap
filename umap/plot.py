@@ -1122,8 +1122,8 @@ def diagnostic(
             local_dim[i] = np.where(
                 np.cumsum(pca.explained_variance_ratio_) > local_variance_threshold
             )[0][0]
-        vmin = np.percentile(local_dim, 5)
-        vmax = np.percentile(local_dim, 95)
+        vmin = 1
+        vmax = 4
         ax.scatter(
             points[:, 0],
             points[:, 1],
